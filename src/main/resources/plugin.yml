@@ -1,0 +1,57 @@
+name: Strafe
+version: ${project.version}
+main: de.kuerbisskraft.strafe.Strafe
+api-version: 1.15
+prefix: Strafe
+authors: [ Frank-Mayer ]
+description: Punish players
+website: https://kuerbisskraft.de
+
+commands:
+  ban:
+    description: bannt oder mutet einen spieler
+    permission: strafe.ban
+  unban:
+    description: entbannt oder entmuted einen spieler
+    permission: strafe.ban
+  banlist:
+    description: listet alle gebannten oder gemuteten spieler auf
+    permission: strafe.list
+  banedit:
+    description: bearbeitet eine bestimmte strafen ID
+    permission: strafe.edit
+  banadd:
+    description: fügt eine neue strafe hinzu
+  bandelete:
+    description: löscht eine bestimmte strafe
+
+permissions:
+  strafe.*:
+    description: Volle Kontrolle der Strafen
+    default: op
+    children:
+      strafe.add: true
+      strafe.delete: true
+      strafe.list: true
+      strafe.edit: true
+      strafe.ban: true
+      strafe.unban: true
+      strafe.16: true
+  strafe.add:
+    description: fügt eine neue Strafe hinzu
+    default: op
+  strafe.delete:
+    description: löscht eine bestimmte Strafe
+    default: op
+  strafe.edit:
+    description: bearbeiten von Strafen
+    default: op
+  strafe.ban:
+    description: bannt oder mutet einen spieler
+    default: op
+  strafe.unban:
+    description: entbannt oder entmutet einen Spieler
+    default: op
+  strafe.16:
+    description: kann nur die ban ID 16 benutzen für Mods
+    default: op
