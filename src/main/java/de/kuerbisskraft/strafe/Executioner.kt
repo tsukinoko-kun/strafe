@@ -289,6 +289,24 @@ internal class Executioner {
         return null
     }
 
+    internal fun getReasonsOfPlayer(target: String): MutableList<String> {
+        val reasons = mutableListOf<String>()
+
+        for (el in bannedPlayers) {
+            if (el.playerName == target) {
+                reasons.add(el.reasonId)
+            }
+        }
+
+        for (el in mutedPlayers) {
+            if (el.playerName == target) {
+                reasons.add(el.reasonId)
+            }
+        }
+
+        return reasons
+    }
+
     // private
 
     private fun ban(player: Player, reason: String, until: Long, reasonId: String): Boolean {
