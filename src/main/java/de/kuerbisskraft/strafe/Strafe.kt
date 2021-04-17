@@ -48,7 +48,7 @@ class Strafe : JavaPlugin(), CommandExecutor, TabCompleter, Listener {
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        if (executioner.isBanned(event.player)) {
+        if (executioner.isPlayerBanned(event.player)) {
             event.quitMessage = null
         }
     }

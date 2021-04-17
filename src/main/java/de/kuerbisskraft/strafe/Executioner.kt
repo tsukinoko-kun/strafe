@@ -240,26 +240,26 @@ internal class Executioner {
         return false
     }
 
-    internal fun isBanned(target: Player): Boolean {
+    internal fun isPlayerBanned(target: OfflinePlayer): Boolean {
         val id = getPlayerId(target)
-        val banData = bannedPlayers.find {
-            return it.player == id
-        }
+        val banData = bannedPlayers.find { it.player == id }
 
         if (banData != null) {
             val banExpire = banData.expire
 
-            if (banExpire > Date().time) {
-                return true
+            return if (banExpire > Date().time) {
+                true
             } else {
                 bannedPlayers.remove(banData)
+                isPlayerBanned(target)
             }
         }
 
         return false
     }
 
-    internal fun isPlayerMuted(target: Player): String? {
+
+    internal fun isPlayerMuted(target: OfflinePlayer): String? {
         val id = getPlayerId(target)
 
         val muteData = mutedPlayers.find { it.player == id }
@@ -268,7 +268,7 @@ internal class Executioner {
             val muteExpire = muteData.expire
 
             if (muteExpire > Date().time) {
-                val muteExpireDisplay = dataFormat.format(Date(muteExpire))
+                val muteExpireDisplay = dateFormat.format(Date(muteExpire))
                 return "${ChatColor.RED}Du bist gemuted bis $muteExpireDisplay"
             } else {
                 mutedPlayers.remove(muteData)
