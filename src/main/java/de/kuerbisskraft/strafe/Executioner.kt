@@ -179,6 +179,14 @@ internal class Executioner {
         return true
     }
 
+    internal fun askBanIdsStringList(): MutableList<String> {
+        val list = mutableListOf<String>()
+        for (el in banReasonTypes) {
+            list.add(el.key)
+        }
+        return list
+    }
+
     internal fun askSetBanId(
         sender: CommandSender,
         id: String,
@@ -214,14 +222,20 @@ internal class Executioner {
     }
 
     internal fun askDeleteBanId(sender: CommandSender, id: String): Boolean {
-        return false
+        return if (banReasonTypes.containsKey(id) && banReasonTexts.containsKey(id) && banReasonTimes.containsKey(id)) {
+            banReasonTypes.remove(id)
+            banReasonTexts.remove(id)
+            banReasonTimes.remove(id)
+            sender.sendMessage("${ChatColor.RED}Ban ID '${id}' gelöscht")
+            true
+        } else {
+            true
+        }
     }
 
     internal fun applyBan(target: Player): Boolean {
         val id = getPlayerId(target)
-        val banData = bannedPlayers.find {
-            return it.player == id
-        }
+        val banData = bannedPlayers.find { it.player == id }
 
         if (banData != null) {
             val banExpire = banData.expire
@@ -338,26 +352,24 @@ internal class Executioner {
         } $unit"
     }
 
-    private fun getPlayerId(player: Player): String {
+    private fun getPlayerId(player: OfflinePlayer): String {
         return player.uniqueId.toString()
     }
 
     private fun unban(player: String, reasonId: String): Boolean {
-        val playerId = getPlayerId(Bukkit.getPlayer(player) ?: return false)
+        val playerId = getPlayerId(Bukkit.getOfflinePlayer(player))
 
         return when (getReasonType(reasonId)) {
             true -> {
                 bannedPlayers.removeIf {
                     it.player == playerId
                 }
-                true
             }
 
             false -> {
                 mutedPlayers.removeIf {
                     it.player == playerId
                 }
-                true
             }
 
             else -> false
