@@ -53,5 +53,5 @@ permissions:
     description: entbannt oder entmutet einen Spieler
     default: op
   strafe.16:
-    description: kann nur die ban ID 16 benutzen für Mods
+    description: kann nur die bann ID 16 benutzen für Mods
     default: op

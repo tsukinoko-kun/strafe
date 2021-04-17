@@ -83,9 +83,9 @@ internal class Executioner {
             setBanId("16", 1800000L, "Kurzer Timeout vom Mod", true)
             setBanId("19", 1209600000L, "Rassismus (Hitler Skins, Chatnachrichten)", true)
             setBanId("20", 432000000L, "Automatischer Spam durch Bot", false)
-            setBanId("70", 604800000L, "Ban eines Admins", true)
-            setBanId("80", 2592000000L, "Ban eines Admins", true)
-            setBanId("99", 31536000000L, "Ban eines Admins", true)
+            setBanId("70", 604800000L, "Bann eines Admins", true)
+            setBanId("80", 2592000000L, "Bann eines Admins", true)
+            setBanId("99", 31536000000L, "Bann eines Admins", true)
         }
 
         timer.schedule(timerTask {
@@ -134,7 +134,7 @@ internal class Executioner {
             sender.sendMessage("${ChatColor.GREEN}$player entbannt")
             true
         } else {
-            sender.sendMessage("${ChatColor.RED}Entbannen von $player mit ban ID $reasonId fehlgeschlagen")
+            sender.sendMessage("${ChatColor.RED}Entbannen von $player mit bann ID $reasonId fehlgeschlagen")
             false
         }
     }
@@ -173,7 +173,8 @@ internal class Executioner {
                 else -> return false
             }
             val reason = banReasonTexts[key] ?: return false
-            idList.appendLine("${ChatColor.DARK_RED}ID: $key ${ChatColor.RED}- ${ChatColor.DARK_RED}$mode ${ChatColor.RED}- ${ChatColor.DARK_RED}$reason")
+            val dur = this.timeDisplay(banReasonTimes[key] ?: return false)
+            idList.appendLine("${ChatColor.DARK_RED}ID: $key ${ChatColor.RED}- ${ChatColor.DARK_RED}$mode ${ChatColor.RED}- ${ChatColor.DARK_RED}$reason ${ChatColor.RED}- ${ChatColor.DARK_RED}$dur")
         }
         sender.sendMessage(idList.toString())
         return true
