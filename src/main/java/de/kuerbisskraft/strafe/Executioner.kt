@@ -103,7 +103,7 @@ internal class Executioner {
     internal fun askBan(sender: CommandSender, playerName: String, reason: String): Boolean {
         val player = Bukkit.getPlayer(playerName)
         if (player == null) {
-            sender.sendMessage("${ChatColor.RED}Spieler '$player' nicht gefunden")
+            sender.sendMessage("${ChatColor.RED}Spieler '$playerName' nicht gefunden")
             return false
         }
 
@@ -131,10 +131,10 @@ internal class Executioner {
 
     internal fun askUnban(sender: CommandSender, player: String, reasonId: String): Boolean {
         return if (unban(player, reasonId)) {
-            sender.sendMessage("$player entbannt")
+            sender.sendMessage("${ChatColor.GREEN}$player entbannt")
             true
         } else {
-            sender.sendMessage("entbannen fehlgeschlagen")
+            sender.sendMessage("${ChatColor.RED}Entbannen von $player mit ban ID $reasonId fehlgeschlagen")
             false
         }
     }
@@ -146,7 +146,7 @@ internal class Executioner {
             banList.appendLine("${ChatColor.GREEN}  keine")
         } else {
             for (p in bannedPlayers) {
-                banList.appendLine("${ChatColor.GREEN}  ${p.playerName}${ChatColor.YELLOW}: ${p.message}")
+                banList.appendLine("${ChatColor.GREEN}  ${p.playerName}${ChatColor.YELLOW}: ${p.reasonId} - ${p.expire}")
             }
         }
         banList.appendLine("${ChatColor.YELLOW}${ChatColor.BOLD}Aktuell gemuted: ${ChatColor.RESET}")
@@ -230,11 +230,8 @@ internal class Executioner {
                 target.kickPlayer(banData.message)
                 return true
             } else {
-                Bukkit.broadcastMessage("${target.name} ban is expired")
                 mutedPlayers.remove(banData)
             }
-        } else {
-            Bukkit.broadcastMessage("${target.name} banData is null")
         }
 
         return false
@@ -293,7 +290,8 @@ internal class Executioner {
 
     private fun getReasonText(reasonId: String): String? {
         if (banReasonTexts.containsKey(reasonId) && banReasonTimes.containsKey(reasonId)) {
-            return "${banReasonTexts[reasonId]}\n${timeDisplay(banReasonTimes[reasonId]!!)}"
+            val time = dateFormat.format(Date(Date().time + banReasonTimes[reasonId]!!))
+            return "${kickPrefix}\n${ChatColor.YELLOW}Grund: ${ChatColor.RESET}${banReasonTexts[reasonId]}\n${ChatColor.YELLOW}Ende des Bans: ${ChatColor.RESET} ${time}\n${kickSuffix}"
         }
 
         return null
