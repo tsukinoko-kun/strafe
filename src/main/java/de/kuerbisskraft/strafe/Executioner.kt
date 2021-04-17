@@ -174,8 +174,38 @@ internal class Executioner {
         return true
     }
 
-    internal fun askSetBanId(sender: CommandSender, id: String, reason: String): Boolean {
-        return false
+    internal fun askSetBanId(
+        sender: CommandSender,
+        id: String,
+        duration: String,
+        reason: String,
+        type: String,
+        override: Boolean
+    ): Boolean {
+
+        if (!parseableReasonId.matcher(id).matches()) {
+            sender.sendMessage("${ChatColor.RED}ID nicht erlaubt")
+            return false
+        }
+
+        if (askBanIdsStringList().contains(id) && !override) {
+            sender.sendMessage("${ChatColor.RED}ID bereits vergeben")
+            return false
+        }
+
+        val durationMS = parseDuration(duration) ?: run {
+            sender.sendMessage("${ChatColor.RED}Dauer im falschen Format")
+            return false
+        }
+
+        val ban = when (type.toLowerCase()) {
+            "ban" -> true
+            "mute" -> false
+            else -> return false
+        }
+
+        setBanId(id, durationMS, reason, ban)
+        return true
     }
 
     internal fun askDeleteBanId(sender: CommandSender, id: String): Boolean {
@@ -347,6 +377,12 @@ internal class Executioner {
             's', 'S' -> 1000L
             else -> return null
         }
+    }
+
+    private fun setBanId(reasonId: String, duration: Long, reasonText: String, ban: Boolean) {
+        banReasonTexts[reasonId] = reasonText
+        banReasonTimes[reasonId] = duration
+        banReasonTypes[reasonId] = ban
     }
 
     private fun saveConfigToDisc() {
