@@ -55,3 +55,7 @@ Version: Bukkit 1.15.2
 | `/banadd <id> <dauer> <ban/mute> <beschreibung>`  | fügt eine neue strafe hinzu                      | strafe.add                            |
 | `/banedit <id> <dauer> <ban/mute> <beschreibung>` | bearbeitet eine bestimmte strafen ID             | strafe.edit                           |
 | `/bandelete <id>`                                 | löscht eine bestimmte strafe                     | strafe.delete                         |
+
+## Sonderfall ID 16
+
+Die ID 16 ist nicht bearbeitbar (außer in der config), außerdem kann man sie einzeln freigeben. So hat eine bestimmte Gruppe die Berechtigung die ID 16 zu verwenden, sonst nichts. 
