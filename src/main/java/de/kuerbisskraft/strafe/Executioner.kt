@@ -331,6 +331,24 @@ internal class Executioner {
         }
     }
 
+    private fun parseDuration(durationString: String): Long? {
+        if (!parseableDuration.matcher(durationString).matches()) {
+            return null
+        }
+
+        val lastCharIndex = durationString.count() - 1
+
+        val value = (durationString.substring(0, lastCharIndex)).toLongOrNull() ?: return null
+
+        return value * when (durationString[lastCharIndex]) {
+            'd', 'D' -> 86400000L
+            'h', 'H' -> 3600000L
+            'm', 'M' -> 60000L
+            's', 'S' -> 1000L
+            else -> return null
+        }
+    }
+
     private fun saveConfigToDisc() {
         val bans = mutableListOf<BanConfig>()
         for (el in banReasonTypes) {
