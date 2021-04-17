@@ -57,7 +57,7 @@ internal class CmdInterpreter(private val executioner: Executioner) {
         return false
     }
 
-    fun onTabComplete(command: Command, args: Array<out String>): MutableList<String> {
+    fun onTabComplete(sender: CommandSender, command: Command, args: Array<out String>): MutableList<String> {
         val argsSize = args.size
         when (command.name) {
             "ban" -> {
@@ -71,7 +71,13 @@ internal class CmdInterpreter(private val executioner: Executioner) {
                     }
 
                     2 -> {
-                        return executioner.askBanIdsStringList()
+                        val ids = mutableListOf<String>()
+                        for (id in executioner.askBanIdsStringList()) {
+                            if (sender.hasPermission("strafe.ban") || id == "16") {
+                                ids.add(id)
+                            }
+                        }
+                        return ids
                     }
                 }
             }

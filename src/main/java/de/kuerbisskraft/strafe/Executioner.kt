@@ -207,6 +207,11 @@ internal class Executioner {
             return false
         }
 
+        if (id == "16") {
+            sender.sendMessage("${ChatColor.RED}Bann ID 16 kann nicht bearbeitet werden!")
+            return false
+        }
+
         val durationMS = parseDuration(duration) ?: run {
             sender.sendMessage("${ChatColor.RED}Dauer im falschen Format")
             return false
@@ -223,6 +228,11 @@ internal class Executioner {
     }
 
     internal fun askDeleteBanId(sender: CommandSender, id: String): Boolean {
+        if (id == "16") {
+            sender.sendMessage("${ChatColor.RED}Bann ID 16 kann nicht gelöscht werden")
+            return false
+        }
+
         return if (banReasonTypes.containsKey(id) && banReasonTexts.containsKey(id) && banReasonTimes.containsKey(id)) {
             banReasonTypes.remove(id)
             banReasonTexts.remove(id)

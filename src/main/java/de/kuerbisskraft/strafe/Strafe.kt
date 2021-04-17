@@ -36,7 +36,7 @@ class Strafe : JavaPlugin(), CommandExecutor, TabCompleter, Listener {
         alias: String,
         args: Array<out String>
     ): MutableList<String> {
-        return cmdInterpreter.onTabComplete(command, args)
+        return cmdInterpreter.onTabComplete(sender, command, args)
     }
 
     @EventHandler
