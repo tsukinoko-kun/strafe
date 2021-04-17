@@ -12,9 +12,9 @@ internal class CmdInterpreter(private val executioner: Executioner) {
                 if (args.isEmpty()) {
                     return executioner.askBanIdList(sender)
                 } else
-                if (argsSize >= 2) {
-                    return executioner.askBan(sender, args[0], args[1])
-                }
+                    if (argsSize >= 2) {
+                        return executioner.askBan(sender, args[0], args[1])
+                    }
             }
 
             "unban" -> {
@@ -27,9 +27,23 @@ internal class CmdInterpreter(private val executioner: Executioner) {
                 return executioner.askBanList(sender)
             }
 
-            "banedit", "banadd" -> {
-                if (argsSize >= 2) {
-                    return executioner.askSetBanId(sender, args[0], args[1])
+            "banedit" -> {
+                if (argsSize > 3) {
+                    val text = mutableListOf<String>()
+                    for (i in 3 until argsSize) {
+                        text.add(args[i])
+                    }
+                    return executioner.askSetBanId(sender, args[0], args[1], text.joinToString(" "), args[2], true)
+                }
+            }
+
+            "banadd" -> {
+                if (argsSize > 3) {
+                    val text = mutableListOf<String>()
+                    for (i in 3 until argsSize) {
+                        text.add(args[i])
+                    }
+                    return executioner.askSetBanId(sender, args[0], args[1], text.joinToString(" "), args[2], false)
                 }
             }
 
