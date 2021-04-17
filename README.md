@@ -46,12 +46,12 @@ Version: Bukkit 1.15.2
 
 ## Commands
 
-Command | Funktion | Permission
---- | ---
-`/ban` | zeigt eine Liste aller verfügbaren Bann IDs | `strafe.ban` oder `strafe.16`
-`/ban <spielername> <id>` | bannt oder mutet einen spieler | `strafe.ban` oder `strafe.16` (nur ID 16)
-`/unban <spielername <id>` | entbannt oder entmuted einen spieler | `strafe.ban`
-`/banlist` | Listet alle gebannten oder gemuteten spieler auf | `strafe.list`
-`/banedit <id> <dauer> <ban/mute> <Beschreibung>` | bearbeitet eine bestimmte strafen ID | `strafe.edit`
-`/banadd <id> <dauer> <ban/mute> <Beschreibung>` | fügt eine neue strafe hinzu | `strafe.add`
-`/bandelete <id>` | löscht eine bestimmte strafe | `strafe.delete`
+| Command                                           | Beschreibung                                     | Permission                            |
+|---------------------------------------------------|--------------------------------------------------|---------------------------------------|
+| `/ban`                                            | zeigt eine Liste aller verfügbaren Bann IDs      | strafe.ban oder strafe.16             |
+| `/ban <spielername> <id>`                         | bannt oder mutet einen spieler                   | strafe.ban oder strafe.16 (nur ID 16) |
+| `/unban <spielername <id>`                        | entbannt oder entmuted einen spieler             | strafe.ban                            |
+| `/banlist`                                        | Listet alle gebannten oder gemuteten spieler auf | strafe.list                           |
+| `/banadd <id> <dauer> <ban/mute> <beschreibung>`  | fügt eine neue strafe hinzu                      | strafe.add                            |
+| `/banedit <id> <dauer> <ban/mute> <beschreibung>` | bearbeitet eine bestimmte strafen ID             | strafe.edit                           |
+| `/bandelete <id>`                                 | löscht eine bestimmte strafe                     | strafe.delete                         |
