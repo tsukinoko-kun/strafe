@@ -4,6 +4,7 @@ import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
@@ -11,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 
-class Strafe : JavaPlugin(), CommandExecutor, Listener {
+class Strafe : JavaPlugin(), CommandExecutor, TabCompleter, Listener {
     private val executioner = Executioner()
     private val cmdInterpreter = CmdInterpreter(executioner)
 
@@ -21,6 +22,15 @@ class Strafe : JavaPlugin(), CommandExecutor, Listener {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         return cmdInterpreter.onCommand(sender, command, args)
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String> {
+        return cmdInterpreter.onTabComplete(command, args)
     }
 
     @EventHandler
