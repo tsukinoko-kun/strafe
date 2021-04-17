@@ -18,6 +18,12 @@ class Strafe : JavaPlugin(), CommandExecutor, TabCompleter, Listener {
 
     override fun onEnable() {
         getPluginManager().registerEvents(this, this)
+        super.onEnable()
+    }
+
+    override fun onDisable() {
+        executioner.cleanUp()
+        super.onDisable()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

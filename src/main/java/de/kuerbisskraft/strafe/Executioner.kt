@@ -95,6 +95,11 @@ internal class Executioner {
 
     // internal
 
+    internal fun cleanUp() {
+        timer.cancel()
+        timer.purge()
+    }
+
     internal fun askBan(sender: CommandSender, playerName: String, reason: String): Boolean {
         val player = Bukkit.getPlayer(playerName)
         if (player == null) {
