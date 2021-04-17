@@ -1,12 +1,20 @@
 package de.kuerbisskraft.strafe
 
-import javafx.scene.input.DataFormat
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import de.kuerbisskraft.strafe.data.BanConfig
+import de.kuerbisskraft.strafe.data.BanData
+import de.kuerbisskraft.strafe.data.Config
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
+import kotlin.concurrent.timerTask
 import kotlin.math.roundToInt
 
 internal class Executioner {
@@ -17,48 +25,72 @@ internal class Executioner {
     private val bannedPlayers = mutableListOf<BanData>()
     private val mutedPlayers = mutableListOf<BanData>()
 
-    private val dataFormat = SimpleDateFormat("dd.MM.yyyy HH:mm:ss z")
+    private val parseableDuration = Pattern.compile("\\G[0-9]+[dhms]\\z", Pattern.CASE_INSENSITIVE)
+    private val parseableReasonId = Pattern.compile("\\G[a-zA-Z0-9_]+\\z")
+
+    private val kickPrefix: String
+    private val kickSuffix: String
+
+    private val dateFormat: SimpleDateFormat
+
+    private val gson = GsonBuilder().setPrettyPrinting().create()
+    private val configPath = "plugins/strafe/"
+    private val configFilePath = configPath + "strafe.json"
+    private val configFile = File(configFilePath)
+
+    private var jsonHash = -1
+
+    private val timer = Timer()
 
     init {
-        banReasonTexts["3"] = "Harte Beleidigung"
-        banReasonTimes["3"] = 3600000L // 1h
-        banReasonTypes["3"] = false // mute
+        val p = File(configPath)
+        if (!p.exists()) {
+            p.mkdirs()
+        }
 
-        banReasonTexts["4"] = "Werbung für Fremdserver"
-        banReasonTimes["4"] = 604800000L // 1d
-        banReasonTypes["4"] = true // ban
+        if (configFile.exists() && !configFile.isDirectory) {
+            val json = configFile.readText(Charsets.UTF_8)
+            val type = object : TypeToken<Config>() {}.type
+            val import: Config = gson.fromJson(json, type)
 
-        banReasonTexts["5"] = "Extremer spam"
-        banReasonTimes["5"] = 3600000L // 1h
-        banReasonTypes["5"] = false // mute
+            dateFormat = SimpleDateFormat(import.dateFormat)
 
-        banReasonTexts["8"] = "Provokantes Verhalten"
-        banReasonTimes["8"] = 3600000L // 1h
-        banReasonTypes["8"] = true // ban
+            kickPrefix = import.kickPrefix
+            kickSuffix = import.kickSuffix
 
-        banReasonTexts["16"] = "Kurzer Timeout vom Mod"
-        banReasonTimes["16"] = 1800000L // 30m
-        banReasonTypes["16"] = true // ban
+            for (el in import.banReasons) {
+                setBanId(el.id, el.duration, el.text, el.ban)
+            }
 
-        banReasonTexts["19"] = "Rassismus (Hitler Skins, Chatnachrichten)"
-        banReasonTimes["19"] = 1209600000L // 14d
-        banReasonTypes["19"] = true // ban
+            for (el in import.bannedPlayers) {
+                bannedPlayers.add(el)
+            }
 
-        banReasonTexts["20"] = "Automatischer Spam durch Bot"
-        banReasonTimes["20"] = 432000000L // 5d
-        banReasonTypes["20"] = false // mute
+            for (el in import.mutedPlayers) {
+                mutedPlayers.add(el)
+            }
+        } else {
+            dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm:ss z")
 
-        banReasonTexts["70"] = "Ban eines Admins"
-        banReasonTimes["70"] = 604800000L // 7d
-        banReasonTypes["70"] = true // ban
+            kickPrefix =
+                "${ChatColor.RESET}[${ChatColor.RED}Spielverbot${ChatColor.RESET}] du wurdest vom Spiel ${ChatColor.RED}Ausgeschlossen"
+            kickSuffix = ""
 
-        banReasonTexts["80"] = "Ban eines Admins"
-        banReasonTimes["80"] = 2592000000L // 30d
-        banReasonTypes["80"] = true // ban
+            setBanId("3", 3600000L, "Harte Beleidigung", false)
+            setBanId("4", 604800000L, "Werbung für Fremdserver", true)
+            setBanId("5", 3600000L, "Extremer spam", false)
+            setBanId("8", 3600000L, "Provokantes Verhalten", true)
+            setBanId("16", 1800000L, "Kurzer Timeout vom Mod", true)
+            setBanId("19", 1209600000L, "Rassismus (Hitler Skins, Chatnachrichten)", true)
+            setBanId("20", 432000000L, "Automatischer Spam durch Bot", false)
+            setBanId("70", 604800000L, "Ban eines Admins", true)
+            setBanId("80", 2592000000L, "Ban eines Admins", true)
+            setBanId("99", 31536000000L, "Ban eines Admins", true)
+        }
 
-        banReasonTexts["99"] = "Ban eines Admins"
-        banReasonTimes["99"] = 31536000000L // 365d
-        banReasonTypes["99"] = true // ban
+        timer.schedule(timerTask {
+            saveConfigToDisc()
+        }, 5000, 10000)
     }
 
     // internal
@@ -80,9 +112,9 @@ internal class Executioner {
 
         if (
             if (resonType) {
-                ban(player, reason, Date().time + expireTime, reason)
+                ban(player, reasonText, Date().time + expireTime, reason)
             } else {
-                mute(player, reason, Date().time + expireTime, reason)
+                mute(player, reasonText, Date().time + expireTime, reason)
             }
         ) {
             sender.sendMessage("${ChatColor.GOLD}Spieler '${player.name}' bestraft: ${timeDisplay(expireTime)}")
@@ -296,6 +328,29 @@ internal class Executioner {
             }
 
             else -> false
+        }
+    }
+
+    private fun saveConfigToDisc() {
+        val bans = mutableListOf<BanConfig>()
+        for (el in banReasonTypes) {
+            val key = el.key
+            bans.add(
+                BanConfig(
+                    key,
+                    banReasonTimes[key] ?: continue,
+                    banReasonTypes[key] ?: continue,
+                    banReasonTexts[key] ?: continue
+                )
+            )
+        }
+
+        val json =
+            gson.toJson(Config(dateFormat.toPattern(), bans, bannedPlayers, mutedPlayers, kickPrefix, kickSuffix))
+        val newHash = json.hashCode()
+        if (newHash != jsonHash) {
+            configFile.writeText(json, Charsets.UTF_8)
+            jsonHash = newHash
         }
     }
 }
