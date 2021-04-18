@@ -269,6 +269,7 @@ internal class Executioner {
         }
 
         setBanId(id, durationMS, reason, ban)
+        sender.sendMessage("${ChatColor.GREEN}Bann ID '${id}' gespeichert")
         return true
     }
 
@@ -282,7 +283,7 @@ internal class Executioner {
             banReasonTypes.remove(id)
             banReasonTexts.remove(id)
             banReasonTimes.remove(id)
-            sender.sendMessage("${ChatColor.RED}Ban ID '${id}' gelöscht")
+            sender.sendMessage("${ChatColor.RED}Bann ID '${id}' gelöscht")
             true
         } else {
             true
