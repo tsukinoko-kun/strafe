@@ -73,7 +73,7 @@ internal class CmdInterpreter(private val executioner: Executioner) {
                     2 -> {
                         val ids = mutableListOf<String>()
                         for (id in executioner.askBanIdsStringList()) {
-                            if (sender.hasPermission("strafe.ban") || id == "16") {
+                            if (sender.hasPermission("strafe.ban") || (id == "16" && sender.hasPermission("strafe.16")) || (id == "85" && sender.hasPermission("strafe.85"))) {
                                 ids.add(id)
                             }
                         }

@@ -10,7 +10,6 @@ website: https://kuerbisskraft.de
 commands:
   ban:
     description: bannt oder mutet einen spieler
-    permission: strafe.16
   unban:
     description: entbannt oder entmuted einen spieler
     permission: strafe.ban
@@ -39,6 +38,7 @@ permissions:
       strafe.ban: true
       strafe.unban: true
       strafe.16: true
+      strafe.85: true
   strafe.add:
     description: fügt eine neue Strafe hinzu
     default: op
@@ -53,9 +53,13 @@ permissions:
     default: op
     children:
       strafe.16: true
+      strafe.85: true
   strafe.unban:
     description: entbannt oder entmutet einen Spieler
     default: op
   strafe.16:
     description: kann nur die bann ID 16 benutzen für Mods
+    default: op
+  strafe.85:
+    description: kann nur die bann ID 85 benutzen für Mods
     default: op

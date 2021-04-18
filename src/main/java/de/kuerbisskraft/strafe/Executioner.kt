@@ -80,12 +80,18 @@ internal class Executioner {
             setBanId("4", 604800000L, "Werbung für Fremdserver", true)
             setBanId("5", 3600000L, "Extremer spam", false)
             setBanId("8", 3600000L, "Provokantes Verhalten", true)
-            setBanId("16", 1800000L, "Kurzer Timeout vom Mod", true)
             setBanId("19", 1209600000L, "Rassismus (Hitler Skins, Chatnachrichten)", true)
             setBanId("20", 432000000L, "Automatischer Spam durch Bot", false)
             setBanId("70", 604800000L, "Bann eines Admins", true)
             setBanId("80", 2592000000L, "Bann eines Admins", true)
             setBanId("99", 31536000000L, "Bann eines Admins", true)
+        }
+
+        if (!banReasonTexts.containsKey("16")) {
+            setBanId("16", 1800000L, "Kurzer Timeout vom Mod", true)
+        }
+        if (!banReasonTexts.containsKey("85")) {
+            setBanId("85", 2592000000L, "Bann aufgrund eines möglichen Account Hacks", true)
         }
 
         timer.schedule(timerTask {
@@ -101,6 +107,26 @@ internal class Executioner {
     }
 
     internal fun askBan(sender: CommandSender, playerName: String, reason: String): Boolean {
+        val allow16 = sender.hasPermission("strafe.16")
+        val allow85 = sender.hasPermission("strafe.85")
+        if (!sender.hasPermission("strafe.ban") && ((reason == "16" && !allow16) || (reason == "85" && !allow85))) {
+            sender.sendMessage(
+                ChatColor.RED.toString() +
+                    when {
+                        allow16 -> {
+                            "Du darfst nur die ID 16 verwenden"
+                        }
+                        allow85 -> {
+                            "Du darfst nur die ID 85 verwenden"
+                        }
+                        else -> {
+                            "Dir fehlt die nötige Berechtigung"
+                        }
+                    }
+            )
+            return false
+        }
+
         val player = Bukkit.getPlayer(playerName)
         if (player == null) {
             sender.sendMessage("${ChatColor.RED}Spieler '$playerName' nicht gefunden")
@@ -226,8 +252,8 @@ internal class Executioner {
             return false
         }
 
-        if (id == "16") {
-            sender.sendMessage("${ChatColor.RED}Bann ID 16 kann nicht bearbeitet werden!")
+        if (id == "16" || id == "85") {
+            sender.sendMessage("${ChatColor.RED}Diese Bann ID kann nicht bearbeitet werden!")
             return false
         }
 
@@ -247,8 +273,8 @@ internal class Executioner {
     }
 
     internal fun askDeleteBanId(sender: CommandSender, id: String): Boolean {
-        if (id == "16") {
-            sender.sendMessage("${ChatColor.RED}Bann ID 16 kann nicht gelöscht werden")
+        if (id == "16" || id == "85") {
+            sender.sendMessage("${ChatColor.RED}Diese Bann ID kann nicht gelöscht werden")
             return false
         }
 
