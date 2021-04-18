@@ -165,8 +165,19 @@ internal class Executioner {
 
     internal fun askBanIdList(sender: CommandSender): Boolean {
         val idList = StringBuilder()
-        for (el in banReasonTexts) {
-            val key = el.key
+
+        var longestLength = 1
+        val idKeyList = mutableListOf<String>()
+        for (el in banReasonTypes) {
+            idKeyList.add(el.key)
+            if (el.key.length > longestLength) {
+                longestLength = el.key.length
+            }
+        }
+
+        idList.appendLine("${ChatColor.DARK_GRAY}[${ChatColor.YELLOW}Strafe${ChatColor.DARK_GRAY}] <spielerName> <grundId>")
+
+        for (key in idKeyList.sortedBy { exp -> exp.padStart(longestLength, '0') }) {
             val mode = when (banReasonTypes[key]) {
                 true -> "BAN"
                 false -> "MUTE"
@@ -174,8 +185,16 @@ internal class Executioner {
             }
             val reason = banReasonTexts[key] ?: return false
             val dur = this.timeDisplay(banReasonTimes[key] ?: return false)
-            idList.appendLine("${ChatColor.DARK_RED}ID: $key ${ChatColor.RED}- ${ChatColor.DARK_RED}$mode ${ChatColor.RED}- ${ChatColor.DARK_RED}$reason ${ChatColor.RED}- ${ChatColor.DARK_RED}$dur")
+            idList.appendLine(
+                "${ChatColor.DARK_RED}ID: ${
+                    key.padStart(
+                        longestLength,
+                        '0'
+                    )
+                } ${ChatColor.RED}- ${ChatColor.DARK_RED}$mode ${ChatColor.RED}- ${ChatColor.DARK_RED}$reason ${ChatColor.RED}- ${ChatColor.DARK_RED}$dur"
+            )
         }
+
         sender.sendMessage(idList.toString())
         return true
     }
